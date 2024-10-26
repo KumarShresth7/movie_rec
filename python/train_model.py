@@ -7,8 +7,6 @@ movies = pd.read_csv('data/tmdb_5000_movies.csv')
 cred = pd.read_csv('data/tmdb_5000_credits.csv')
 
 movies = movies.merge(cred,on='title')
-
-
 movies = movies[['movie_id','title','overview','genres','keywords','cast','crew']]
 
 import ast
@@ -44,8 +42,6 @@ def fetch_director(text):
 
 movies['crew'] = movies['crew'].apply(fetch_director)
 movies['overview'] = movies['overview'].apply(lambda x:x.split())
-
-
 movies['genres'] = movies['genres'].apply(lambda x:[i.replace(" ","") for i in x])
 movies['keywords'] = movies['keywords'].apply(lambda x:[i.replace(" ","") for i in x])
 movies['cast'] = movies['cast'].apply(lambda x:[i.replace(" ","") for i in x])
@@ -55,7 +51,30 @@ movies['tags'] = movies['overview'] + movies['genres'] + movies['keywords'] + mo
 new_df = movies[['movie_id','title','tags']]
 new_df['tags'] = new_df['tags'].apply(lambda x:" ".join(x))
 new_df['tags'] = new_df['tags'].apply(lambda x:x.lower())
-print(new_df['tags'].head())
+# print(new_df['tags'].head())
+
+#Data Preprocessing done upto here
+
+#Vectorization begins from this point
+from sklearn.feature_extraction.text import CountVectorizer
+cv = CountVectorizer(max_features=5000,stop_words='english')
+vector = cv.fit_transform(new_df['tags']).toarray()
+print(vector)
+
+from sklearn.metrics.pairwise import cosine_similarity
+similarity = cosine_similarity(vector)
+
+
+
+
+
+
+        
+
+
+
+
+
 
 
 
